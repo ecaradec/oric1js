@@ -1,23 +1,29 @@
 # Welcome
 
-This project was a try to see if I could build an emulator for a computer I own when I was young : the Oric 1.
-The project was more an aim to explore how to build a VM. Actually I started with a 6502 emulator and it seemed 
-like it would be too hard to expand it to a running machine.
+Oric1js project was a try to see if I could build an emulator for a computer I own
+when I was a kid : the Oric 1.
 
-The emulator is entirely in javascript. I can run from a webpage.
+The main intention was to learn how to build a VM. It started as a 6502
+emulator and as it seemed like it wouldn't be too hard to expand it to a running
+machine.
 
-The keyboard is emulator so you can type a few commands. The keyboard is in qwerty as the emulator emulate for the
-scan code of the keyboard. However, the ctrl key is replaced by the LeftAlt key because Ctrl commands will usually
-trigger shortcuts on Windows.
+The emulator is entirely in javascript, so you can just clone the project, open
+oric1.html in the browser and see it working. 
+
+The keyboard is emulated so you can type a few commands. However, the ctrl key
+is replaced by the *left alt* key because *ctrl* shortcuts will usually trigger
+shortcuts on Windows.
+
+The ROM is included in the source but of course not covered by the license.
 
 # TODO
 
-- [ ] Github release
 - [ ] Memory computation or display is broken
 - [ ] Try to move the VM in a webworker and post scanline periodicaly
 - [ ] Use uint8array for memory
 
 # DONE
+- [X] Github release
 - [X] Read the keyboard
 - [X] gestion du curseur
 
