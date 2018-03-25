@@ -12,14 +12,14 @@ trigger shortcuts on Windows.
 
 # TODO
 
-[_] Github release
-[_] Memory computation or display is broken
-[_] Try to move the VM in a webworker and post scanline periodicaly
-[_] Use uint8array for memory
+- [_] Github release
+- [_] Memory computation or display is broken
+- [_] Try to move the VM in a webworker and post scanline periodicaly
+- [_] Use uint8array for memory
 
 # DONE
-[X] Read the keyboard
-[X] gestion du curseur
+- [X] Read the keyboard
+- [X] gestion du curseur
 
 
 
