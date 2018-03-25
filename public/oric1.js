@@ -80,19 +80,6 @@ function toBin(v) {
     return pad(v.toString(2), 8, "0").replace(/0/g,'_').replace(/1/g,'#');
 }
 
-
-// row est ecrit sur port B du 6522 => write on 0x300
-//
-// col est ecrite sur le 8912 via 6522. steps :
-// write address (register)
-// - set porta du 6522 to 0xE (30F)
-// - set CA2=1, CB2=1  (0x30C) 8912 selectionne le registre (0xE pour clavier )
-// - set CA2=1, CB2=1  (0x30C) 8912 arrete de recopier le registre
-// write data
-// - set porta du 6522 (0x30F)
-// - set CA2=0, CB2=1 (w 0x30C) => lecture du porta, ecriture sur le 8912 (CA2=BC1 du 8912 et CB2=BDIR du 8912 )
-// - set CA2=0, CB2=0 (w 0x30C) => arrete de lire les données
-
 var p8912 = {
     registers:[]
 };
@@ -283,7 +270,8 @@ var addr_space = {
 var cpu = {
     fetch:function() {
         var tmp = addr_space.read(PC);
-        str += hex(tmp) + " ";
+        if(logInstruction)
+            str += hex(tmp) + " ";
         PC++;
         return tmp;
     }
@@ -410,7 +398,8 @@ function ABS() {
     oper = lo + (hi<<8)
 
     M = addr_space.read(oper);
-    operStr = "$"+hex(oper,4) + " = " + hex(M);
+    if(logInstruction)
+        operStr = "$"+hex(oper,4) + " = " + hex(M);
     addrMode = ADDRMODE_ABS;
 }
 
@@ -420,7 +409,8 @@ function ABS_J() {
     oper = lo + (hi<<8)
 
     M = addr_space.read(oper);
-    operStr = "$"+hex(oper,4);
+    if(logInstruction)
+        operStr = "$"+hex(oper,4);
     addrMode = ADDRMODE_ABS;
 }
 
@@ -432,7 +422,8 @@ function ACC() {
 
 function IMM() {
     oper = cpu.fetch();
-    operStr = "#$"+hex(oper);
+    if(logInstruction)
+        operStr = "#$"+hex(oper);
     M = oper;
     addrMode = ADDRMODE_IMMED;
 }
@@ -448,7 +439,8 @@ function ABS_X() {
 
         oper = base + X;
     M = addr_space.read(oper);
-    operStr = "$"+hex(base,4)+",X @ "+hex(oper,4)+" = "+hex(M);
+    if(logInstruction)
+        operStr = "$"+hex(base,4)+",X @ "+hex(oper,4)+" = "+hex(M);
     addrMode = ADDRMODE_ABS_X;
 }
 
@@ -459,7 +451,8 @@ function ABS_Y() {
 
     oper = (base + Y)&0xFFFF;
     M = addr_space.read(oper);
-    operStr = "$"+hex(base,4)+",Y @ "+hex(oper,4)+" = "+hex(M);
+    if(logInstruction)
+        operStr = "$"+hex(base,4)+",Y @ "+hex(oper,4)+" = "+hex(M);
     addrMode = ADDRMODE_ABS_Y;
 }
 
@@ -467,7 +460,8 @@ function ZPG() {
     oper = cpu.fetch();
 
     M = addr_space.read(oper);
-    operStr = "$"+ hex(oper,2) +" = "+ hex(M,2);
+    if(logInstruction)
+        operStr = "$"+ hex(oper,2) +" = "+ hex(M,2);
     addrMode = ADDRMODE_ZPG;
 }
 
@@ -476,7 +470,8 @@ function ZPG_X() {
     base = cpu.fetch();
     oper = (base + X)&0xFF;
     M = addr_space.read(oper);
-    operStr = "$"+hex(base)+",X @ "+hex(oper)+" = "+hex(M);
+    if(logInstruction)
+        operStr = "$"+hex(base)+",X @ "+hex(oper)+" = "+hex(M);
     addrMode = ADDRMODE_ZPG_X;
 }
 
@@ -484,7 +479,8 @@ function ZPG_Y() {
     base = cpu.fetch();
     oper = (base + Y)&0xFF;
     M = addr_space.read(oper);
-    operStr = "$"+hex(base)+",Y @ "+hex(oper)+" = "+hex(M);
+    if(logInstruction)
+        operStr = "$"+hex(base)+",Y @ "+hex(oper)+" = "+hex(M);
     addrMode = ADDRMODE_ZPG_X;
 }
 
@@ -498,7 +494,8 @@ function IND() {
 
     oper = addr_space.read(addr) + (addr_space.read(nextAddr)<<8);
 
-    operStr = "($"+hex(addr,4)+") = "+hex(oper,4);
+    if(logInstruction)
+        operStr = "($"+hex(addr,4)+") = "+hex(oper,4);
 }
 
 function X_IND() {
@@ -508,7 +505,8 @@ function X_IND() {
     addr  = memory[oper&0xFF] + (memory[(oper+1)&0xFF]<<8);
     M = addr_space.read(addr);
 
-    operStr = "($"+hex(base)+",X) @ "+hex(oper&0xFF) +" = "+hex(addr) + " = " + hex(M);
+    if(logInstruction)
+        operStr = "($"+hex(base)+",X) @ "+hex(oper&0xFF) +" = "+hex(addr) + " = " + hex(M);
     oper = addr;
 }
 
@@ -518,7 +516,8 @@ function IND_Y() {
     addr  = memory[oper] + (memory[(oper+1)&0xFF]<<8);  
     M = addr_space.read((addr+Y/*+C*/)&0xFFFF);
 
-    operStr = "($"+hex(oper)+"),Y = "+hex(addr, 4) +" @ "+hex((addr+Y/*+C*/)&0xFFFF) + " = " + hex(M);
+    if(logInstruction)
+        operStr = "($"+hex(oper)+"),Y = "+hex(addr, 4) +" @ "+hex((addr+Y/*+C*/)&0xFFFF) + " = " + hex(M);
     oper = (addr+Y)&0xFFFF;
 }
 
@@ -528,7 +527,8 @@ function REL() {
         b = (256-b) * -1;
 
     oper = PC + b;
-    operStr = "$"+hex(oper,4);
+    if(logInstruction)
+        operStr = "$"+hex(oper,4);
     addrMode = ADDRMODE_REL;
 }
 
@@ -1159,12 +1159,14 @@ var oric1 = {
         var orgPC = PC;
         var orgSP = SP;
 
-        str = hex(PC,4)+" ";
+        if(logInstruction) {
+            str = hex(PC,4)+" ";
 
-        regStr =" A:"+hex(A)+" X:"+hex(X)+" Y:"+hex(Y)+" P:"+hex(getP())+" SP:"+hex(SP)+" ";
-        
-        var cyclesStr = 'CYC : '+((cycles*3)%340);
-        operStr = "";
+            regStr =" A:"+hex(A)+" X:"+hex(X)+" Y:"+hex(Y)+" P:"+hex(getP())+" SP:"+hex(SP)+" ";
+            
+            var cyclesStr = 'CYC : '+((cycles*3)%340);
+            operStr = "";
+        }
 
         icycles = 0;
 
@@ -1252,16 +1254,17 @@ var oric1 = {
             _300%=3;
         }
 
-        str = rpad(str, 16, " ");
+        if(logInstruction) {
+            str = rpad(str, 16, " ");
 
-        str+=ins.name+" ";
-        str+=operStr+" ";
-        str = rpad(str, 48, " ");
+            str+=ins.name+" ";
+            str+=operStr+" ";
+            str = rpad(str, 48, " ");
 
-        str += regStr + cyclesStr; // + " " + dump;
-        
-        if(logInstruction)
+            str += regStr + cyclesStr; // + " " + dump;
+            
             console.log(str);
+        }
         
     },
     disassemble: function(from,nb) {
