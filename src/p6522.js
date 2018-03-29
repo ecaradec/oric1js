@@ -131,6 +131,14 @@ var VIA = {
         }
         return 0xff;
     },
+    step: function(oric) {
+        if( oric.keyboard.getKeyState(this.portb&7, oric.p8912.registers[0xE]) ) {
+            this.portb |= 0x8;
+        } else {
+            this.portb &= ~0x8;
+        }
+
+    }
 };
 
 module.exports = VIA; 

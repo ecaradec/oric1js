@@ -19,11 +19,6 @@ function toBin(v) {
     return pad(v.toString(2), 8, "0").replace(/0/g,'_').replace(/1/g,'#');
 }
 
-var p8912 = {
-    registers:[]
-};
-p8912.registers.fill(0,0,0xF);
-
 var addr_space = {
     write:function(addr, src) {
         if(addr>=0x300 && addr<0x400) {
@@ -62,6 +57,7 @@ var rasterLine = 0;
 var n = 0 ;
 var VIA = require('./p6522.js');
 var CPU = require('./p6502.js');
+var p8912 = require('./p8912.js');
 var keyboard = require('./keyboard.js');
 var screen = require('./screen.js')();
 var cpu = CPU({addr_space: addr_space, memory: memory});
@@ -69,6 +65,10 @@ var cpu = CPU({addr_space: addr_space, memory: memory});
 var oric1 = {
     stats: {},
     run: function(opts) {
+        this.VIA = VIA;
+        this.p8912 = p8912;
+        this.keyboard = keyboard;
+        
         cpu.reset();
         this.opts = opts;
 
@@ -97,42 +97,9 @@ var oric1 = {
         cpu.step();
         var icycles = cpu.icycles;
 
-        // update 6522 ports
-        var row = 3;
-        var col = 4;
-       
-        //
-        // col est ecrite sur le 8912 via 6522. steps :
-        // write address (register)
-        // - set porta du 6522 to 0xE (30F)
-        // - set CA2=1, CB2=1  (0x30C) 8912 selectionne le registre (0xE pour clavier )
-        // - set CA2=1, CB2=1  (0x30C) 8912 arrete de recopier le registre
-        // write data
-        // - set porta du 6522 (0x30F)
-        // - set CA2=0, CB2=1 (w 0x30C) => lecture du porta, ecriture sur le 8912 (CA2=BC1 du 8912 et CB2=BDIR du 8912 )
-        // - set CA2=0, CB2=0 (w 0x30C) => arrete de lire les données
-
-        // 1110
-        // 12>>11111111
-        // 12>>11011101
-        // 11111011
-        // 12>>11111101
-        // 12>>11011101
-
-        // should test only flags CA2 and CB2
-        if(VIA.pcr == 0xFF) {
-            p8912.address = VIA.porta;
-        }
-
-        if(VIA.pcr == 0xFD) {
-            p8912.registers[p8912.address] = VIA.porta;
-        }
-
-        if( keyboard.getKeyState(VIA.portb&7, p8912.registers[0xE]) ) {
-            VIA.portb |= 0x8;
-        } else {
-            VIA.portb &= ~0x8;
-        }
+        p8912.step(this);
+        
+        VIA.step(this);
 
         // count cycles
         if(icycles==1)
