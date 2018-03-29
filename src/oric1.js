@@ -41,13 +41,7 @@ var addr_space = {
 var memory = Array(0xFFFF);
 var rom = require('./basic11ROM.js')
 
-var logInstruction = false;
-var logWrite = false;
-var logRead = false;
-
 var cycles = 0;
-
-var str="";
 
 var rastercycles     = 20000;  // every 1/50s  = 20ms
 var IRQCycles        = 100000; // every 1/100s = 10ms
@@ -85,15 +79,6 @@ var oric1 = {
         once();
     },
     step: function() {
-        if(logInstruction) {
-            str = hex(PC,4)+" ";
-
-            regStr =" A:"+hex(A)+" X:"+hex(X)+" Y:"+hex(Y)+" P:"+hex(getP())+" SP:"+hex(SP)+" ";
-            
-            var cyclesStr = 'CYC : '+((cycles*3)%340);
-            operStr = "";
-        }
-
         cpu.step();
         var icycles = cpu.icycles;
 
@@ -124,25 +109,7 @@ var oric1 = {
             IRQCycles += 10000;
             cpu.irq();
         }
-
-        if(logInstruction) {
-            str = rpad(str, 16, " ");
-
-            str+=ins.name+" ";
-            str+=operStr+" ";
-            str = rpad(str, 48, " ");
-
-            str += regStr + cyclesStr; // + " " + dump;
-            
-            console.log(str);
-        }
-        
-    },
-    debugStatus: function() {
-        console.log(getStatusStr()+"\n");
-        this.disassemble(PC, 20);
-        //this.dumpScreen();
-    }            
+    }
 }
 
 oric1.run();
