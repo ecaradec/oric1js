@@ -271,10 +271,6 @@ function setD(f) {
     D = f;
 }
 
-// simulate reset
-push16(PC);
-push(getP());
-
 function dumpAround(addr) {
     console.log(hex(addr-2,4) + " " + hex(memory[addr-2]));
     console.log(hex(addr-1,4) + " " + hex(memory[addr-1]));
@@ -1035,6 +1031,11 @@ var n = 0 ;
 var oric1 = {
     stats: {},
     run: function(opts) {
+
+        // simulate reset
+        push16(PC);
+        push(getP());
+
         this.opts = opts;
 
         var self=this;
@@ -1232,81 +1233,7 @@ var oric1 = {
         }
         PC = orgPC;
     },
-
-    printLocation: function() {
-        if(PC == 0xf88f)
-            console.log("RESET");
-        if(PC == 0xf9aa)
-            console.log("RESET 6502");
-        if(PC == 0xfa14)
-            console.log("FIND QUANTITY OF RAM");
-        if(PC == 0xf8b8)
-            console.log("SETUP SYSTEM");
-        if(PC == 0xeccc)
-            console.log("START BASIC");
-        if(PC == 0xc4a8) {
-            console.log("RESTART BASIC");
-        }
-        if(PC == 0xd767)
-            console.log("STRING CONCATENATION");
-        if(PC == 0xc70d)
-            console.log("CLEAR");
-        if(PC == 0xf967)
-            console.log("SET TEXT MODE");
-        if(PC == 0xf9c9)
-            console.log("SET UP INITIAL TEXT SCREEN");
-        if(PC == 0xf9c9)
-            console.log("Set up TEXT SCREEN");
-        if(PC == 0xF75A)
-            console.log("WRITE STATUS (CAPS)");
-        if(PC == 0xF865)
-            console.log("PRINT TO STATUS LINE");
-        if(PC == 0xc486) {
-
-            var error = "";
-            var i = 0;
-            do {
-                error+=String.fromCharCode(memory[0xC2A8+X+i]&0x7f);
-                if((memory[0xC2A8+X+i]&0x80)!=0)
-                    break;
-                i++;
-            } while(1);
-
-            console.log("PRINT ERROR MESSAGE : "+error);
-        }
-        if(PC == 0xc444)
-            console.log("CHECK FOR FREE MEMORY");
-        if(PC == 0xd361)
-            console.log("DIMENSION AN ARRAY");
-        if(PC == 0xc6f0)
-            console.log("NEW");
-        if(PC == 0xf6a2)
-            ; //console.log("CLEAR CURRENT LINE");
-        if(PC == 0xf77c)
-           ;// console.log("PRINT CHAR TO SCREEN");
-        if(PC == 0xf7e4)
-           ;// console.log("PRINT ACC TO SCREEN");
-    },
-
     dumpScreen: function() {
-        return;
-    //    return;
-    //    var c=65*8;
-        
-    /*
-        for(var c=0*8;c<128*8;) {
-            console.log('$'+hex(c/8));
-            console.log(toBin(memory[0xb400+c])); c++;
-            console.log(toBin(memory[0xb400+c])); c++;
-            console.log(toBin(memory[0xb400+c])); c++;
-            console.log(toBin(memory[0xb400+c])); c++;
-            console.log(toBin(memory[0xb400+c])); c++;
-            console.log(toBin(memory[0xb400+c])); c++;
-            console.log(toBin(memory[0xb400+c])); c++;
-            console.log(toBin(memory[0xb400+c])); c++;
-        }
-    */
-
         var screen = "";
         for(var line=0;line<28;line++) {
             for(var col=0;col<40;col++) {
@@ -1340,11 +1267,9 @@ var oric1 = {
     },
 
     debugStatus: function() {
-    //    console.log('\033[2J');
-    //    process.stdout.write('\033c');
         console.log(getStatusStr()+"\n");
         this.disassemble(PC, 20);
-        this.dumpScreen();
+        //this.dumpScreen();
     }            
 }
 
