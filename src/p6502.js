@@ -15,8 +15,6 @@ var N = 0;
 
 var icycles = 0;
 
-var logInstruction = false;
-
 function addr_space_read(addr) {
     icycles ++;
     return addr_space.read(addr);
@@ -130,8 +128,6 @@ function ABS() {
     oper = lo + (hi<<8)
 
     M = addr_space_read(oper);
-    if(logInstruction)
-        operStr = "$"+hex(oper,4) + " = " + hex(M);
 }
 
 function ABS_J() {
@@ -140,8 +136,6 @@ function ABS_J() {
     oper = lo + (hi<<8)
 
     M = addr_space_read(oper);
-    if(logInstruction)
-        operStr = "$"+hex(oper,4);
 }
 
 function ACC() {
@@ -151,8 +145,6 @@ function ACC() {
 
 function IMM() {
     oper = cpu.fetch();
-    if(logInstruction)
-        operStr = "#$"+hex(oper);
     M = oper;
 }
 
@@ -166,8 +158,6 @@ function ABS_X() {
 
         oper = base + X;
     M = addr_space_read(oper);
-    if(logInstruction)
-        operStr = "$"+hex(base,4)+",X @ "+hex(oper,4)+" = "+hex(M);
 }
 
 function ABS_Y() {
@@ -177,16 +167,12 @@ function ABS_Y() {
 
     oper = (base + Y)&0xFFFF;
     M = addr_space_read(oper);
-    if(logInstruction)
-        operStr = "$"+hex(base,4)+",Y @ "+hex(oper,4)+" = "+hex(M);
 }
 
 function ZPG() {
     oper = cpu.fetch();
 
     M = addr_space_read(oper);
-    if(logInstruction)
-        operStr = "$"+ hex(oper,2) +" = "+ hex(M,2);
 }
 
 function ZPG_X() {
@@ -194,16 +180,12 @@ function ZPG_X() {
     base = cpu.fetch();
     oper = (base + X)&0xFF;
     M = addr_space_read(oper);
-    if(logInstruction)
-        operStr = "$"+hex(base)+",X @ "+hex(oper)+" = "+hex(M);
 }
 
 function ZPG_Y() {
     base = cpu.fetch();
     oper = (base + Y)&0xFF;
     M = addr_space_read(oper);
-    if(logInstruction)
-        operStr = "$"+hex(base)+",Y @ "+hex(oper)+" = "+hex(M);
 }
 
 function IND() {
@@ -215,8 +197,6 @@ function IND() {
 
     oper = addr_space_read(addr) + (addr_space.read(nextAddr)<<8);
 
-    if(logInstruction)
-        operStr = "($"+hex(addr,4)+") = "+hex(oper,4);
 }
 
 function X_IND() {
@@ -225,8 +205,6 @@ function X_IND() {
     addr  = addr_space.read(oper&0xFF) + (addr_space.read((oper+1)&0xFF)<<8);
     M = addr_space_read(addr);
 
-    if(logInstruction)
-        operStr = "($"+hex(base)+",X) @ "+hex(oper&0xFF) +" = "+hex(addr) + " = " + hex(M);
     oper = addr;
 }
 
@@ -235,8 +213,6 @@ function IND_Y() {
     addr  = addr_space.read(oper) + (addr_space.read((oper+1)&0xFF)<<8);  
     M = addr_space_read((addr+Y/*+C*/)&0xFFFF);
 
-    if(logInstruction)
-        operStr = "($"+hex(oper)+"),Y = "+hex(addr, 4) +" @ "+hex((addr+Y/*+C*/)&0xFFFF) + " = " + hex(M);
     oper = (addr+Y)&0xFFFF;
 }
 
@@ -246,8 +222,6 @@ function REL() {
         b = (256-b) * -1;
 
     oper = PC + b;
-    if(logInstruction)
-        operStr = "$"+hex(oper,4);
 }
 
 // unknown addr mode
@@ -810,8 +784,6 @@ function irq() {
 
 function fetch() {
     var tmp = addr_space_read(PC);
-    if(logInstruction)
-        str += hex(tmp) + " ";
     PC++;
     return tmp;
 }
