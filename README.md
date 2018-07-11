@@ -24,16 +24,3 @@ on keyboard be snappier.
 Rem 3 : The ROM is included in the source for convenience but of course is not
 covered by the license.
 
-# TODO
-
-- [ ] Memory computation or display is broken
-- [ ] Try to move the VM in a webworker and post scanline periodicaly
-- [ ] Use uint8array for memory
-
-# DONE
-- [X] Github release
-- [X] Read the keyboard
-- [X] Prevent the cursor from moving right alone
-
-
-
