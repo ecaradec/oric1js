@@ -10,6 +10,10 @@ to the Oric 1 prompt and be able to type commands.
 The emulator is entirely in javascript, so you can just clone the project, open
 oric1.html in the browser and see it working. 
 
+![Oric1 prompt](https://github.com/ecaradec/oric1/blob/master/img/oric1.png)
+
+# Remarks
+
 Rem 1 : The keyboard is emulated so you can type a few commands. However, the ctrl key
 is replaced by the *left alt* key because *ctrl* shortcuts will usually trigger
 shortcuts on Windows.
