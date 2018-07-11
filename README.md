@@ -10,7 +10,7 @@ to the Oric 1 prompt and be able to type commands.
 The emulator is entirely in javascript, so you can just clone the project, open
 oric1.html in the browser and see it working. 
 
-![Oric1 prompt](https://github.com/ecaradec/oric1/blob/master/img/oric1.png)
+![Oric1 prompt](https://github.com/ecaradec/oric1js/blob/master/img/oric1.png)
 
 # Remarks
 
